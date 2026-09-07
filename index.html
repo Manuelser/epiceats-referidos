@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Epic Eats - Registro de Referidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#080C59] text-white font-sans min-h-screen flex items-center justify-center p-4">
+
+  <div class="max-w-md w-full bg-[#1F1273] border-2 border-[#C7D943] rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+    
+    <!-- Encabezado -->
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-black text-[#C7D943] uppercase tracking-wider">EPIC EATS 🍔</h1>
+      <p class="text-[#BAA0F2] text-xs font-bold mt-1 tracking-widest uppercase">Un sabor que desafía la realidad</p>
+      
+      <div class="mt-4 bg-[#080C59] p-3 rounded-xl border border-[#705CF2]/40">
+        <p class="text-xs text-gray-200">
+          Registra tus datos, activa tu <strong class="text-[#C7D943]">Código Épico</strong> y empieza a ganar comida gratis.
+        </p>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form id="referralForm" onsubmit="procesarRegistro(event)" class="space-y-4">
+      
+      <div>
+        <label class="block text-xs font-bold text-[#BAA0F2] mb-1">Nombre y Apellido *</label>
+        <input type="text" id="nombre" required 
+          class="w-full bg-[#080C59] border border-[#705CF2] rounded-lg p-2.5 text-sm focus:border-[#C7D943] outline-none text-white placeholder-gray-400" 
+          placeholder="Ej: Manuel Serrano">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-[#BAA0F2] mb-1">Número de WhatsApp *</label>
+        <input type="tel" id="whatsapp" required 
+          class="w-full bg-[#080C59] border border-[#705CF2] rounded-lg p-2.5 text-sm focus:border-[#C7D943] outline-none text-white placeholder-gray-400" 
+          placeholder="Ej: 04241234567">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-[#BAA0F2] mb-1">Instagram *</label>
+          <input type="text" id="instagram" required 
+            class="w-full bg-[#080C59] border border-[#705CF2] rounded-lg p-2.5 text-sm focus:border-[#C7D943] outline-none text-white placeholder-gray-400" 
+            placeholder="@tu_usuario">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-[#BAA0F2] mb-1">TikTok *</label>
+          <input type="text" id="tiktok" required 
+            class="w-full bg-[#080C59] border border-[#705CF2] rounded-lg p-2.5 text-sm focus:border-[#C7D943] outline-none text-white placeholder-gray-400" 
+            placeholder="@tu_usuario">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-[#BAA0F2] mb-1">¿Alguien te recomendó? Ingresa su Código (Opcional)</label>
+        <input type="text" id="codigoReferente" 
+          class="w-full bg-[#080C59] border border-[#705CF2] rounded-lg p-2.5 text-sm focus:border-[#C7D943] outline-none text-white placeholder-gray-400 uppercase" 
+          placeholder="Ej: EPIC-04241234567">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-[#BAA0F2] mb-1">Fecha de Cumpleaños (Opcional)</label>
+        <input type="date" id="cumpleanos" 
+          class="w-full bg-[#080C59] border border-[#705CF2] rounded-lg p-2.5 text-sm focus:border-[#C7D943] outline-none text-white">
+      </div>
+
+      <!-- Cuadro Informativo Obligatorio -->
+      <div class="p-3 bg-[#080C59] rounded-lg border border-[#705CF2] text-xs space-y-1">
+        <p class="font-bold text-[#C7D943]">📌 Requisito de Validación:</p>
+        <p class="text-gray-300 text-[11px]">
+          Debes seguir a <strong class="text-white">@epiceats.ve</strong> en Instagram y <strong class="text-white">@epiceats</strong> en TikTok para liberar tus premios.
+        </p>
+      </div>
+
+      <!-- Checkbox Legal -->
+      <div class="flex items-start gap-2">
+        <input type="checkbox" id="terms" required class="mt-1 accent-[#C7D943]">
+        <label for="terms" class="text-[11px] text-gray-300">
+          Acepto los Términos del Programa y la Política de Privacidad. Autorizo el envío de promociones por WhatsApp.
+        </label>
+      </div>
+
+      <button type="submit" 
+        class="w-full bg-[#C7D943] hover:bg-[#b5c735] text-[#080C59] font-black py-3 rounded-xl uppercase tracking-wider transition duration-200 shadow-lg text-sm">
+        🔥 ACTIVAR MI CÓDIGO ÉPICO
+      </button>
+    </form>
+  </div>
+
+  <!-- Lógica en JavaScript -->
+  <script>
+    function procesarRegistro(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim().replace(/\D/g, '');
+      const instagram = document.getElementById('instagram').value.trim();
+      const tiktok = document.getElementById('tiktok').value.trim();
+      const codigoReferente = document.getElementById('codigoReferente').value.trim().toUpperCase();
+
+      // Generar código único del cliente basado en su número
+      const miCodigo = `EPIC-${whatsapp}`;
+
+      // Número de WhatsApp Business de Epic Eats (Sin el signo +)
+      const numeroEpicEats = "584241425961"; 
+
+      // Construcción del mensaje para WhatsApp
+      let mensaje = `¡Hola Epic Eats! 👑⚡%0A%0AMe acabo de registrar en la web:%0A👤 *Nombre:* ${nombre}%0A📱 *Mi Código Épico:* ${miCodigo}%0A📸 *Instagram:* ${instagram}%0A🎵 *TikTok:* ${tiktok}`;
+
+      if (codigoReferente) {
+        mensaje += `%0A🎁 *Fui referido por el código:* ${codigoReferente}`;
+      }
+
+      mensaje += `%0A%0A¡Ya los sigo en redes sociales y quiero hacer mi pedido! 🍔🔥`;
+
+      // Redirigir a WhatsApp
+      window.location.href = `https://wa.me/${numeroEpicEats}?text=${mensaje}`;
+    }
+  </script>
+</body>
+</html>
