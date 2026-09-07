@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Epic Eats - Activa tu Loot Épico</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SDK Oficial de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Efecto Glitch más sutil para el título */
     .glitch {
       position: relative;
       color: #C7D943;
@@ -25,7 +26,7 @@
 </head>
 <body class="bg-[#03041a] text-white font-sans min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden">
 
-  <!-- Luces de Neón Difuminadas en el Fondo (Orbes) -->
+  <!-- Luces de Neón Difuminadas en el Fondo -->
   <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
     <div class="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#705CF2]/20 blur-[120px]"></div>
     <div class="absolute top-[60%] -right-[10%] w-[40vw] h-[40vw] rounded-full bg-[#C7D943]/10 blur-[100px]"></div>
@@ -34,7 +35,7 @@
   <!-- Tarjeta Principal -->
   <div class="max-w-md w-full bg-[#080C59]/80 backdrop-blur-xl border border-[#705CF2]/40 rounded-[2rem] p-6 sm:p-8 shadow-[0_0_50px_rgba(8,12,89,0.8)] relative z-10 my-4">
     
-    <!-- Header: Solo el Logo y el Título -->
+    <!-- Header -->
     <div class="text-center mb-8">
       <img src="logo.png" alt="Epic Eats Logo" class="w-40 mx-auto mb-4 drop-shadow-[0_0_15px_rgba(199,217,67,0.3)]">
       <h1 class="text-[1.35rem] font-black glitch tracking-wide uppercase leading-tight">UN SABOR QUE DESAFÍA LA REALIDAD</h1>
@@ -80,7 +81,7 @@
           placeholder="Ej: EPIC-0412">
       </div>
 
-      <!-- Cuadro de Misión con la Mascota Integrada -->
+      <!-- Cuadro de Misión -->
       <div class="mt-5 bg-[#1F1273]/60 rounded-xl border border-[#705CF2] p-4 relative overflow-hidden flex items-center shadow-[inset_0_0_20px_rgba(112,92,242,0.15)]">
         <div class="z-10 w-2/3 pr-2">
           <p class="font-bold text-[#C7D943] flex items-center gap-1.5 text-sm">
@@ -91,7 +92,6 @@
             Debes seguir a <strong class="text-white">@epiceats.ve</strong> (IG) y <strong class="text-white">@epiceats</strong> (TikTok) para validar la entrega de tus premios.
           </p>
         </div>
-        <!-- Mascota asomándose desde la derecha -->
         <img src="mascota.png" alt="Mascota Epic Eats" class="absolute -right-2 -bottom-2 w-28 drop-shadow-[-5px_5px_10px_rgba(0,0,0,0.5)] z-0">
       </div>
 
@@ -103,7 +103,7 @@
         </label>
       </div>
 
-      <button type="submit" 
+      <button type="submit" id="btnSubmit"
         class="w-full mt-2 bg-[#C7D943] hover:bg-[#b5c735] text-[#080C59] font-black py-4 rounded-xl uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(199,217,67,0.3)] hover:shadow-[0_0_25px_rgba(199,217,67,0.5)] transform hover:-translate-y-1 text-sm flex justify-center items-center gap-2">
         <span>🎮</span> ACTIVAR MI CÓDIGO
       </button>
@@ -111,8 +111,19 @@
   </div>
 
   <script>
-    function procesarRegistro(e) {
+    // Inicializar Supabase
+    const SUPABASE_URL = "https://owgigqdjvewpufplsnjn.supabase.co"; // <--- REEMPLAZAR AQUÍ
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93Z2lncWRqdmV3cHVmcGxzbmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2MzIwOTgsImV4cCI6MjEwMzIwODA5OH0.hA-kmnC_An3JtBGLkASdQNXuRLqT7r3272zuls8Chv0";            // <--- REEMPLAZAR AQUÍ
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function procesarRegistro(e) {
       e.preventDefault();
+      
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳</span> GUARDANDO DATOS...`;
+      btn.classList.replace('bg-[#C7D943]', 'bg-gray-500');
+
       const nombre = document.getElementById('nombre').value.trim();
       const whatsapp = document.getElementById('whatsapp').value.trim().replace(/\D/g, '');
       const instagram = document.getElementById('instagram').value.trim();
@@ -120,20 +131,44 @@
       const codigoReferente = document.getElementById('codigoReferente').value.trim().toUpperCase();
       const miCodigo = `EPIC-${whatsapp}`;
       const numeroEpicEats = "584241425961"; 
-      
+
+      try {
+        // Guardar automáticamente en la tabla de Supabase
+        const { error } = await _supabase
+          .from('clientes_referidos')
+          .insert([
+            { 
+              nombre_completo: nombre, 
+              whatsapp: whatsapp, 
+              instagram_user: instagram, 
+              tiktok_user: tiktok, 
+              codigo_referido: miCodigo,
+              referido_por: codigoReferente || null,
+              acepta_terminos: true
+            }
+          ]);
+
+        if (error && error.code !== '23505') { // 23505 = código de registro ya existente
+          console.warn('Nota Supabase:', error.message);
+        }
+      } catch (err) {
+        console.error('Error de red/conexión:', err);
+      }
+
+      // Mensaje estructurado para WhatsApp
       let mensaje = `¡Hola Epic Eats! 👑⚡%0A%0AMe acabo de registrar en la plataforma:%0A👤 *Nombre:* ${nombre}%0A📱 *Mi Código Épico:* ${miCodigo}%0A📸 *Instagram:* ${instagram}%0A🎵 *TikTok:* ${tiktok}`;
       
-      if (codigoReferente) { mensaje += `%0A🎁 *Fui invitado por el código:* ${codigoReferente}`; }
+      if (codigoReferente) { 
+        mensaje += `%0A🎁 *Fui invitado por el código:* ${codigoReferente}`; 
+      }
       
       mensaje += `%0A%0A¡Ya completé la misión de seguirlos en redes y quiero hacer mi pedido! 🍔🔥`;
-      
-      const btn = document.querySelector('button[type="submit"]');
-      btn.innerHTML = `<span>⏳</span> CONECTANDO...`;
-      btn.classList.replace('bg-[#C7D943]', 'bg-gray-400');
+
+      btn.innerHTML = `<span>🚀</span> REDIRIGIENDO A WHATSAPP...`;
       
       setTimeout(() => {
         window.location.href = `https://wa.me/${numeroEpicEats}?text=${mensaje}`;
-      }, 1000);
+      }, 800);
     }
   </script>
 </body>
