@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Patrón de cuadros característico del brandboard de Epic Eats */
     .checkerboard-bg {
       background-image: 
         linear-gradient(45deg, rgba(112, 92, 242, 0.05) 25%, transparent 25%), 
@@ -17,7 +16,6 @@
       background-size: 20px 20px;
       background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     }
-    
     .glitch-title {
       text-shadow: 2px 2px 0px #705CF2, -2px -2px 0px #C7D943;
     }
@@ -28,15 +26,12 @@
   <div class="max-w-7xl mx-auto">
     
     <!-- HEADER CON BRANDING Y MASCOTA -->
-    <div class="bg-[#1F1273]/90 border-2 border-[#705CF2] rounded-3xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-[0_0_30px_rgba(112,92,242,0.3)] flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
-      
-      <!-- Efecto de luz decorativa de fondo -->
+    <div class="bg-[#1F1273]/90 border-2 border-[#705CF2] rounded-3xl p-4 sm:p-6 mb-6 shadow-[0_0_30px_rgba(112,92,242,0.3)] flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
       <div class="absolute -right-10 -top-10 w-40 h-40 bg-[#C7D943]/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="flex items-center gap-4 text-center md:text-left z-10">
-        <!-- Mascota oficial del Brandboard -->
         <div class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-[#080C59] border-2 border-[#C7D943] rounded-2xl p-1 shadow-lg overflow-hidden flex items-center justify-center">
-          <img src="mascota.png" alt="Epic Mascot" class="w-full h-full object-contain transform hover:scale-110 transition-transform">
+          <img src="feliz.png" alt="Epic Mascot" class="w-full h-full object-contain transform hover:scale-110 transition-transform">
         </div>
         <div>
           <span class="bg-[#C7D943] text-[#080C59] text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">COMMAND CENTER</span>
@@ -52,23 +47,50 @@
       </div>
     </div>
 
-    <!-- DASHBOARD FINANCIERO (MÉTRICAS CLAVE) -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:mb-8">
-      <!-- Ventas -->
+    <!-- CONFIGURACIÓN DINÁMICA DE COSTOS -->
+    <div class="bg-[#1F1273]/60 border border-[#705CF2]/60 rounded-2xl p-4 sm:p-5 mb-6 shadow-xl">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xs font-black text-[#C7D943] uppercase tracking-wider flex items-center gap-2">
+          <span>⚙️</span> Configuración de Costos de Premios e Insumos ($ USD)
+        </h2>
+        <button onclick="guardarCostosConfig()" class="bg-[#705CF2] hover:bg-[#6049e0] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all">
+          💾 Guardar Costos
+        </button>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div>
+          <label class="block text-[#BAA0F2] mb-1 font-medium">Costo Cyber-Dog</label>
+          <input type="number" step="0.01" id="costoCyberDog" value="1.80" class="w-full bg-[#080C59] border border-[#705CF2] rounded-xl p-2.5 text-white outline-none focus:border-[#C7D943]">
+        </div>
+        <div>
+          <label class="block text-[#BAA0F2] mb-1 font-medium">Costo Ración Papas</label>
+          <input type="number" step="0.01" id="costoPapas" value="0.75" class="w-full bg-[#080C59] border border-[#705CF2] rounded-xl p-2.5 text-white outline-none focus:border-[#C7D943]">
+        </div>
+        <div>
+          <label class="block text-[#BAA0F2] mb-1 font-medium">Costo Epic Burger</label>
+          <input type="number" step="0.01" id="costoEpicBurger" value="2.60" class="w-full bg-[#080C59] border border-[#705CF2] rounded-xl p-2.5 text-white outline-none focus:border-[#C7D943]">
+        </div>
+        <div>
+          <label class="block text-[#BAA0F2] mb-1 font-medium">Costo Tarjeta QR</label>
+          <input type="number" step="0.01" id="costoQr" value="0.15" class="w-full bg-[#080C59] border border-[#705CF2] rounded-xl p-2.5 text-white outline-none focus:border-[#C7D943]">
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD FINANCIERO -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       <div class="bg-[#1F1273]/80 border border-[#705CF2] p-5 rounded-2xl shadow-xl relative overflow-hidden">
         <div class="absolute top-3 right-3 text-emerald-400 text-xl font-bold opacity-30">📈</div>
         <p class="text-xs font-bold text-[#BAA0F2] uppercase tracking-wider">Ventas por Canjes</p>
         <p id="statVentas" class="text-3xl sm:text-4xl font-black text-emerald-400 mt-2">$0.00</p>
         <p class="text-[11px] text-gray-300 mt-1 font-medium">Ingresos brutos en pedidos con premio</p>
       </div>
-      <!-- Costos -->
       <div class="bg-[#1F1273]/80 border border-[#705CF2] p-5 rounded-2xl shadow-xl relative overflow-hidden">
         <div class="absolute top-3 right-3 text-rose-400 text-xl font-bold opacity-30">📉</div>
         <p class="text-xs font-bold text-[#BAA0F2] uppercase tracking-wider">Costo Total (Insumos + QR)</p>
         <p id="statCostos" class="text-3xl sm:text-4xl font-black text-rose-400 mt-2">$0.00</p>
-        <p class="text-[11px] text-gray-300 mt-1 font-medium">Food cost + inversión tarjetas físicas</p>
+        <p class="text-[11px] text-gray-300 mt-1 font-medium">Food cost dinámico + inversión tarjetas</p>
       </div>
-      <!-- ROI -->
       <div class="bg-[#1F1273]/80 border-2 border-[#C7D943] p-5 rounded-2xl shadow-xl relative overflow-hidden">
         <div class="absolute top-3 right-3 text-[#C7D943] text-xl font-bold opacity-30">⚡</div>
         <p class="text-xs font-bold text-[#C7D943] uppercase tracking-wider">Retorno Neto (ROI)</p>
@@ -77,7 +99,7 @@
       </div>
     </div>
 
-    <!-- BUSCADOR RESPONSIVE -->
+    <!-- BUSCADOR -->
     <div class="mb-6">
       <div class="relative">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">🔍</span>
@@ -86,7 +108,7 @@
       </div>
     </div>
 
-    <!-- TABLA RESPONSIVE DE CLIENTES -->
+    <!-- TABLA DE CLIENTES -->
     <div class="bg-[#1F1273]/90 border border-[#705CF2]/50 rounded-3xl overflow-hidden shadow-2xl mb-12">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[700px]">
@@ -109,7 +131,7 @@
 
   </div>
 
-  <!-- MODAL DE CANJE ESTILIZADO -->
+  <!-- MODAL DE CANJE -->
   <div id="modalCanje" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
     <div class="bg-[#1F1273] border-2 border-[#C7D943] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
       <div class="flex items-center gap-3 mb-4 border-b border-[#705CF2] pb-3">
@@ -128,8 +150,9 @@
         <div>
           <label class="block text-xs font-bold text-[#BAA0F2] mb-1 uppercase tracking-wider">Premio Entregado</label>
           <select id="modalPremio" class="w-full bg-[#080C59] border border-[#705CF2] rounded-xl p-3.5 text-sm text-white outline-none focus:border-[#C7D943]">
-            <option value="Cyber-Dog">Cyber-Dog (Costo insumo: $1.80)</option>
-            <option value="Ración de Papas">Ración de Papas (Costo insumo: $0.75)</option>
+            <option value="Epic Burger">Epic Burger (Costo dinámico)</option>
+            <option value="Cyber-Dog">Cyber-Dog (Costo dinámico)</option>
+            <option value="Ración de Papas">Ración de Papas (Costo dinámico)</option>
           </select>
         </div>
 
@@ -155,6 +178,24 @@
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let clientesGlobal = [];
+
+    // Cargar costos guardados en el navegador al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+      if(localStorage.getItem('epic_costo_cyberdog')) document.getElementById('costoCyberDog').value = localStorage.getItem('epic_costo_cyberdog');
+      if(localStorage.getItem('epic_costo_papas')) document.getElementById('costoPapas').value = localStorage.getItem('epic_costo_papas');
+      if(localStorage.getItem('epic_costo_burger')) document.getElementById('costoEpicBurger').value = localStorage.getItem('epic_costo_burger');
+      if(localStorage.getItem('epic_costo_qr')) document.getElementById('costoQr').value = localStorage.getItem('epic_costo_qr');
+      cargarDatos();
+    });
+
+    function guardarCostosConfig() {
+      localStorage.setItem('epic_costo_cyberdog', document.getElementById('costoCyberDog').value);
+      localStorage.setItem('epic_costo_papas', document.getElementById('costoPapas').value);
+      localStorage.setItem('epic_costo_burger', document.getElementById('costoEpicBurger').value);
+      localStorage.setItem('epic_costo_qr', document.getElementById('costoQr').value);
+      alert("¡Costos actualizados correctamente en tu navegador! ⚙️");
+      cargarDashboardFinanciero();
+    }
 
     async function cargarDatos() {
       await cargarClientes();
@@ -199,15 +240,15 @@
           <td class="p-4 sm:p-5 text-center">
             <div class="font-black text-xl text-emerald-400 mb-1.5">${c.premios_ganados}</div>
             <div class="flex justify-center gap-1.5">
-              <button onclick="modificarPremio('${c.id}', 'premios_ganados', ${c.premios_ganados + 1})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-lg font-bold shadow transition-all" title="Sumar Premio Ganado">+1</button>
-              <button onclick="modificarPremio('${c.id}', 'premios_ganados', ${Math.max(0, c.premios_ganados - 1)})" class="bg-rose-900/80 hover:bg-rose-800 text-white text-xs px-2 py-1 rounded-lg font-bold shadow transition-all" title="Deshacer (-1)">-1</button>
+              <button onclick="modificarPremio('${c.id}', 'premios_ganados', ${c.premios_ganados + 1})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-lg font-bold shadow transition-all" title="Sumar">+1</button>
+              <button onclick="modificarPremio('${c.id}', 'premios_ganados', ${Math.max(0, c.premios_ganados - 1)})" class="bg-rose-900/80 hover:bg-rose-800 text-white text-xs px-2 py-1 rounded-lg font-bold shadow transition-all" title="Deshacer">-1</button>
             </div>
           </td>
           <td class="p-4 sm:p-5 text-center">
             <div class="font-black text-xl text-amber-400 mb-1.5">${c.premios_reclamados}</div>
             <div class="flex justify-center gap-1.5">
-              <button onclick="modificarPremio('${c.id}', 'premios_reclamados', ${c.premios_reclamados + 1})" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-2.5 py-1 rounded-lg font-bold shadow transition-all" title="Sumar Premio Reclamado">+1</button>
-              <button onclick="modificarPremio('${c.id}', 'premios_reclamados', ${Math.max(0, c.premios_reclamados - 1)})" class="bg-rose-900/80 hover:bg-rose-800 text-white text-xs px-2 py-1 rounded-lg font-bold shadow transition-all" title="Deshacer (-1)">-1</button>
+              <button onclick="modificarPremio('${c.id}', 'premios_reclamados', ${c.premios_reclamados + 1})" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-2.5 py-1 rounded-lg font-bold shadow transition-all" title="Sumar">+1</button>
+              <button onclick="modificarPremio('${c.id}', 'premios_reclamados', ${Math.max(0, c.premios_reclamados - 1)})" class="bg-rose-900/80 hover:bg-rose-800 text-white text-xs px-2 py-1 rounded-lg font-bold shadow transition-all" title="Deshacer">-1</button>
             </div>
           </td>
           <td class="p-4 sm:p-5 text-center">
@@ -254,9 +295,17 @@
       const montoPedido = parseFloat(document.getElementById('modalMonto').value);
       const viejoReclamados = parseInt(document.getElementById('modalClienteViejoReclamados').value);
 
-      let costoInsumo = premio === 'Cyber-Dog' ? 1.80 : 0.75;
-      let costoTarjetaQR = 0.15; 
-      let costoTotal = costoInsumo + costoTarjetaQR;
+      // Obtener costos dinámicos actuales desde los inputs de configuración
+      let cCyber = parseFloat(document.getElementById('costoCyberDog').value) || 1.80;
+      let cPapas = parseFloat(document.getElementById('costoPapas').value) || 0.75;
+      let cBurger = parseFloat(document.getElementById('costoEpicBurger').value) || 2.60;
+      let cQr = parseFloat(document.getElementById('costoQr').value) || 0.15;
+
+      let costoInsumo = cPapas;
+      if (premio === 'Cyber-Dog') costoInsumo = cCyber;
+      if (premio === 'Epic Burger') costoInsumo = cBurger;
+
+      let costoTotal = costoInsumo + cQr;
 
       const { error: errHistorial } = await _supabase.from('historial_canjes').insert([{
         cliente_whatsapp: wp,
@@ -280,7 +329,7 @@
       } else {
         cerrarModal();
         cargarDatos();
-        alert("¡Canje registrado y métricas financieras actualizadas con éxito! 🚀");
+        alert("¡Canje registrado y métricas financieras recalculadas con éxito! 🚀");
       }
     }
 
