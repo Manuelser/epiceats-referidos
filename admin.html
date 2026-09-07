@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Epic Eats - Panel Admin de Referidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-[#03041a] text-white font-sans min-h-screen p-4 sm:p-6">
+
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-[#705CF2]/40 pb-4 gap-4">
+      <div>
+        <h1 class="text-2xl font-black text-[#C7D943] uppercase tracking-wider">⚡ EPIC EATS - ADMIN PANEL</h1>
+        <p class="text-[#BAA0F2] text-xs">Control de referidos y premios en tiempo real</p>
+      </div>
+      <button onclick="cargarClientes()" class="bg-[#1F1273] hover:bg-[#2d1c9e] border border-[#705CF2] text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md">
+        🔄 Actualizar Datos
+      </button>
+    </div>
+
+    <!-- Buscador -->
+    <div class="mb-6">
+      <input type="text" id="buscador" onkeyup="filtrarClientes()" placeholder="Buscar por nombre o número de WhatsApp..." 
+        class="w-full sm:w-96 bg-[#080C59] border border-[#705CF2]/50 rounded-xl p-3 text-sm focus:border-[#C7D943] outline-none text-white placeholder-gray-400">
+    </div>
+
+    <!-- Tabla de Clientes -->
+    <div class="bg-[#080C59]/90 border border-[#705CF2]/40 rounded-2xl overflow-hidden shadow-2xl">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-[#1F1273]/80 text-[#C7D943] text-xs uppercase tracking-wider border-b border-[#705CF2]/40">
+              <th class="p-4">Cliente / WhatsApp</th>
+              <th class="p-4">Redes</th>
+              <th class="p-4">Código / Referido Por</th>
+              <th class="p-4 text-center">Ganados</th>
+              <th class="p-4 text-center">Reclamados</th>
+              <th class="p-4 text-center">Acciones Rápidas</th>
+            </tr>
+          </thead>
+          <tbody id="tablaClientes" class="divide-y divide-[#705CF2]/20 text-sm">
+            <tr>
+              <td colspan="6" class="p-6 text-center text-[#BAA0F2]">Cargando registros...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CREDENCIALES DE SUPABASE (Las mismas de tu proyecto)
+    const SUPABASE_URL = "https://owgigqdjvewpufplsnjn.supabase.co"; // <--- REEMPLAZAR
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93Z2lncWRqdmV3cHVmcGxzbmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2MzIwOTgsImV4cCI6MjEwMzIwODA5OH0.hA-kmnC_An3JtBGLkASdQNXuRLqT7r3272zuls8Chv0";            // <--- REEMPLAZAR
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let clientesGlobal = [];
+
+    async function cargarClientes() {
+      const tbody = document.getElementById('tablaClientes');
+      tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-[#BAA0F2]">Actualizando datos...</td></tr>`;
+
+      const { data, error } = await _supabase
+        .from('clientes_referidos')
+        .select('*')
+        .order('creado_en', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-400">Error al cargar: ${error.message}</td></tr>`;
+        return;
+      }
+
+      clientesGlobal = data;
+      renderTabla(clientesGlobal);
+    }
+
+    function renderTabla(clientes) {
+      const tbody = document.getElementById('tablaClientes');
+      if (clientes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay clientes registrados todavía.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = clientes.map(c => `
+        <tr class="hover:bg-[#1F1273]/30 transition-colors">
+          <td class="p-4">
+            <div class="font-bold text-white">${c.nombre_completo}</div>
+            <a href="https://wa.me/58${c.whatsapp}" target="_blank" class="text-xs text-[#C7D943] hover:underline">📱 ${c.whatsapp}</a>
+          </td>
+          <td class="p-4 text-xs text-[#BAA0F2]">
+            <div>IG: @${c.instagram_user}</div>
+            <div>TK: @${c.tiktok_user}</div>
+          </td>
+          <td class="p-4 text-xs">
+            <div class="font-mono text-[#C7D943] bg-[#03041a] px-2 py-1 rounded inline-block mb-1">${c.codigo_referido}</div>
+            <div class="text-gray-400">Ref: ${c.referido_por || 'Ninguno'}</div>
+          </td>
+          <td class="p-4 text-center font-bold text-lg text-emerald-400">${c.premios_ganados}</td>
+          <td class="p-4 text-center font-bold text-lg text-amber-400">${c.premios_reclamados}</td>
+          <td class="p-4 text-center">
+            <div class="flex justify-center gap-1.5">
+              <button onclick="modificarPremio('${c.id}', 'premios_ganados', ${c.premios_ganados + 1})" 
+                class="bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold shadow transition-all" title="Sumar Premio Ganado">
+                +1 Ganado
+              </button>
+              <button onclick="modificarPremio('${c.id}', 'premios_reclamados', ${c.premios_reclamados + 1})" 
+                class="bg-amber-600/80 hover:bg-amber-500 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold shadow transition-all" title="Sumar Premio Reclamado">
+                +1 Reclamado
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filtrarClientes() {
+      const texto = document.getElementById('buscador').value.toLowerCase();
+      const filtrados = clientesGlobal.filter(c => 
+        c.nombre_completo.toLowerCase().includes(texto) || c.whatsapp.includes(texto)
+      );
+      renderTabla(filtrados);
+    }
+
+    async function modificarPremio(id, columna, nuevoValor) {
+      const { error } = await _supabase
+        .from('clientes_referidos')
+        .update({ [columna]: nuevoValor })
+        .eq('id', id);
+
+      if (error) {
+        alert("Error al actualizar: " + error.message);
+      } else {
+        cargarClientes(); // Recarga la tabla al instante
+      }
+    }
+
+    // Cargar al abrir la página
+    cargarClientes();
+  </script>
+</body>
+</html>
